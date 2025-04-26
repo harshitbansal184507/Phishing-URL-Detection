@@ -8,7 +8,16 @@ import warnings
 import pickle
 warnings.filterwarnings('ignore')
 from feature import FeatureExtraction
+from joblib import dump, load
 
+import sklearn._loss._loss
+
+# Monkey-patch the missing attribute
+setattr(sklearn._loss._loss, '__pyx_unpickle_CyHalfBinomialLoss', lambda *a: None)
+
+# Add these before loading
+import sys
+sys.modules['sklearn.ensemble._gb_losses'] = sklearn._loss._loss
 file = open("pickle/model.pkl","rb")
 gbc = pickle.load(file)
 file.close()
